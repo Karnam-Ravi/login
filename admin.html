@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+</head>
+<body>
+    <h2>Admin Panel</h2>
+    <h3>Register User</h3>
+    <input type="text" id="newUsername" placeholder="New Username">
+    <input type="password" id="newPassword" placeholder="New Password">
+    <button onclick="registerUser()">Create User</button>
+
+    <h3>User Logs</h3>
+    <button onclick="downloadLogs()">Download Logs</button>
+    <ul id="logList"></ul>
+
+    <script>
+        function registerUser() {
+            const username = document.getElementById("newUsername").value;
+            const password = document.getElementById("newPassword").value;
+
+            fetch("/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            })
+            .then(res => res.json())
+            .then(() => alert("User Created!"));
+        }
+
+        function downloadLogs() {
+            window.location.href = "/export";
+        }
+
+        function fetchLogs() {
+            fetch("/logs")
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("logList").innerHTML = data.map(log => 
+                    `<li>${log.username}: ${log.login_time} - ${log.logout_time || "Still logged in"}</li>`
+                ).join("");
+            });
+        }
+        
+        fetchLogs();
+    </script>
+</body>
+</html>

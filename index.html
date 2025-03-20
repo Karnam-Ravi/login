@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Tracker</title>
+</head>
+<body>
+    <h2>Login Tracker</h2>
+    <div id="loginSection">
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+    </div>
+    
+    <div id="trackerSection" style="display:none;">
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <script>
+        let userId;
+
+        function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            fetch("/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.admin) window.location.href = "/admin.html";
+                if (data.success) {
+                    userId = data.userId;
+                    document.getElementById("loginSection").style.display = "none";
+                    document.getElementById("trackerSection").style.display = "block";
+                } else {
+                    alert("Login Failed");
+                }
+            });
+        }
+
+        function logout() {
+            fetch("/logout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId })
+            })
+            .then(res => res.json())
+            .then(() => location.reload());
+        }
+    </script>
+</body>
+</html>
